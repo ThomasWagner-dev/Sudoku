@@ -68,6 +68,7 @@ public class BeispielLader extends SudokuLader {
         // Zeile 8
         s.setWert(8, 7, 7);
         s.fixiere(8, 7);
-        s.zustand = Geladen;
+        s.setZustand(Geladen);
+
     }
 }

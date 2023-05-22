@@ -1,5 +1,6 @@
 package sudoku;
 
+import anzeige.ISudokuAnzeige;
 import data.Feld;
 import data.Feldgruppe;
 import lader.SudokuLader;
@@ -17,10 +18,10 @@ public class StrategieSudoku extends Sudoku {
     /**
      * Erstellt ein StrategieSudoku Objekt und initialisiert den Lösungsalgorithmus als 'lader'.
      *
-     * @param lader
+     * @param lader  der lader, der das Sudoku-Objekt: 's' lädt.
      */
-    public StrategieSudoku(SudokuLader lader) {
-        super(lader);
+    public StrategieSudoku(SudokuLader lader, ISudokuAnzeige anzeige) {
+        super(lader, anzeige);
     }
 
     /**
@@ -28,7 +29,7 @@ public class StrategieSudoku extends Sudoku {
      */
     @Override
     public void loesen() {
-        zustand = Loesungsversuch;
+        setZustand(Loesungsversuch);
         for (Feldgruppe fg : zeilen) {
             for (Feld f : fg.felder) {
                 if (f.getWert() != 0) {
@@ -37,19 +38,26 @@ public class StrategieSudoku extends Sudoku {
                 }
             }
         }
-        anzeige.ausgeben();
+        anzeige.anzeigen();
         if (loesenRec()) { // Lösung gefunden?
-            zustand = Geloest;
+            setZustand(Geloest);
             System.out.println("Lösung in " + schritte + " Schritten" + ":");
-            anzeige.ausgeben();
+            anzeige.anzeigen();
         } else {
-            zustand = Unloesbar;
-            System.out.println("Keine Lösung gefunden.");
+            setZustand(Unloesbar);
+            if (schritte > 50000000)
+                System.out.println("Zu viele Schritte.");
+            else {
+                System.out.println("Keine Lösung gefunden nach: " + schritte + " Schritten.");
+            }
         }
     }
 
     private boolean loesenRec() {
         schritte++;
+        if (schritte > 50000000) {
+            return false;
+        }
         ArrayList<Feld> gesetzte = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {

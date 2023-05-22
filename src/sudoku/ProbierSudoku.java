@@ -1,5 +1,6 @@
 package sudoku;
 
+import anzeige.ISudokuAnzeige;
 import data.Feld;
 import lader.SudokuLader;
 
@@ -17,8 +18,8 @@ public class ProbierSudoku extends Sudoku {
      *
      * @param lader der Lösungsalgorithmus
      */
-    public ProbierSudoku(SudokuLader lader) {
-        super(lader);
+    public ProbierSudoku(SudokuLader lader, ISudokuAnzeige anzeige) {
+        super(lader, anzeige);
     }
 
     /**
@@ -26,19 +27,26 @@ public class ProbierSudoku extends Sudoku {
      */
     @Override
     public void loesen() {
-        zustand = Loesungsversuch;
+        setZustand(Loesungsversuch);
         if (loesenRec()) { // Lösung gefunden?
-            zustand = Geloest;
+            setZustand(Geloest);
             System.out.println("Lösung in " + schritte + " Schritten" + ":");
-            anzeige.ausgeben();
+            anzeige.anzeigen();
         } else {
-            zustand = Unloesbar;
-            System.out.println("Keine Lösung gefunden.");
+            setZustand(Unloesbar);
+            if (schritte > 50000000)
+                System.out.println("Zu viele Schritte.");
+            else {
+                System.out.println("Keine Lösung gefunden nach: " + schritte + " Schritten.");
+            }
         }
     }
 
     private boolean loesenRec() {
         schritte++;
+        if (schritte > 50000000) {
+            return false;
+        }
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 Feld feld = zeilen[i].getFeld(j);

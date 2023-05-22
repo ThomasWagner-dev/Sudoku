@@ -1,9 +1,12 @@
 package sudoku;
 
+import anzeige.ISudokuAnzeige;
 import data.Feld;
 import data.Feldgruppe;
 import data.SudokuZustand;
 import lader.SudokuLader;
+
+import java.util.ArrayList;
 
 import static data.SudokuZustand.Leer;
 
@@ -29,7 +32,7 @@ public abstract class Sudoku {
     /**
      * Speichert Referenz auf das Anzeigeobjekt, welches die Ausgabe des Sudokus übernimmt.
      */
-    public SudokuAnzeige anzeige;
+    public ISudokuAnzeige anzeige;
     /**
      * Speichert Referenz auf das Laderobjekt, welches das Laden des Sudokus übernimmt.
      */
@@ -38,6 +41,11 @@ public abstract class Sudoku {
      * Enum, welches den aktuellen Zustand des Sudokus speichert.
      */
     public SudokuZustand zustand;
+    /**
+     * Speichert Klassen, welche dem Zustand zuhören und bei Änderung benachrichtigt werden.
+     */
+    public ArrayList<ZustandListener> zustandListeners = new ArrayList<>();
+
     /**
      * Die Anzahl der benötigten Lösungsschritte.
      */
@@ -48,10 +56,11 @@ public abstract class Sudoku {
      * Objekt 'lader'.
      * Achtung, da die Klasse abstract ist, wird dieser Konstruktor nur von seinen Unterklassen aufgerufen.
      *
-     * @param lader
+     * @param lader Der Lader, welcher das Laden des Sudokus übernimmt.
+     * @param anzeige Die Anzeige, welche die Ausgabe des Sudokus übernimmt.
      */
-    public Sudoku(SudokuLader lader) {
-        anzeige = new SudokuAnzeige(this);
+    public Sudoku(SudokuLader lader, ISudokuAnzeige anzeige) {
+        this.anzeige = anzeige;
         this.lader = lader;
 
         quadranten = new Feldgruppe[9];
@@ -84,7 +93,7 @@ public abstract class Sudoku {
                 quadranten[quadrantenIndex].setFeld(feldIndex, feld);
             }
         }
-        zustand = Leer;
+        setZustand(Leer);
     }
 
     /**
@@ -147,5 +156,29 @@ public abstract class Sudoku {
      */
     public void fixiere(int i, int j) {
         zeilen[i].getFeld(j).setFixiert(true);
+    }
+
+    /**
+     * Fügt einen Zustandslistener hinzu.
+     */
+    public void addZustandListener(ZustandListener listener) {
+        zustandListeners.add(listener);
+    }
+
+    /**
+     * Entfernt einen Zustandslistener.
+     */
+    public void removeZustandListener(ZustandListener listener) {
+        zustandListeners.remove(listener);
+    }
+
+    /**
+     * Benachrichtigt alle Zustandslistener über eine Zustandsänderung und ändert ihn.
+     */
+    public void setZustand(SudokuZustand zustand) {
+        this.zustand = zustand;
+        for (ZustandListener listener : zustandListeners) {
+            listener.zustandChanged(zustand);
+        }
     }
 }

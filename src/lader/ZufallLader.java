@@ -11,13 +11,12 @@ import static data.SudokuZustand.Geladen;
  * @author Thomas Wagner
  */
 public class ZufallLader extends SudokuLader {
-    private Sudoku s;
     private final int anzahl;
 
     /**
      * Erstellt ein ZufallLader-Objekt und setzt die Anzahl der zufällig zu setzenden Zahlen.
      *
-     * @param anzahl
+     * @param anzahl Die Anzahl der zufällig zu setzenden Zahlen.
      */
     public ZufallLader(int anzahl) {
         this.anzahl = anzahl;
@@ -45,7 +44,6 @@ public class ZufallLader extends SudokuLader {
                 System.out.println(gesezteZahlen);
             }
         }
-        s.zustand = Geladen;
-        s.anzeige.ausgeben();
+        s.setZustand(Geladen);
     }
 }

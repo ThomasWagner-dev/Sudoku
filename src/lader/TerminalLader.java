@@ -61,6 +61,6 @@ public class TerminalLader extends SudokuLader {
         if (ungueltigeEingaben > 0) {
             System.out.println("Es wurden " + ungueltigeEingaben + " ungültige Eingaben ignoriert.");
         }
-        s.zustand = Geladen;
+        s.setZustand(Geladen);
     }
 }

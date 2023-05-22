@@ -1,5 +1,6 @@
 package control;
 
+import anzeige.SudokuTerminalAnzeige;
 import lader.BeispielLader;
 import lader.SudokuLader;
 import lader.TerminalLader;
@@ -18,11 +19,6 @@ import java.util.Scanner;
  * @author Thomas Wagner
  */
 public class SudokuApp {
-    /**
-     * Das Sudoku, das gelöst werden soll.
-     */
-    private Sudoku s;
-
     /**
      * Die Methode main ist die Hauptmethode des Programms.
      *
@@ -87,26 +83,27 @@ public class SudokuApp {
                 return;
             }
         }
-
+        SudokuTerminalAnzeige anzeige = new SudokuTerminalAnzeige();
         switch (auswahlStrategie) {
             case 1 -> {
-                Sudoku s = new ZufallSudoku(lader);
+                Sudoku s = new ZufallSudoku(lader, anzeige);
+                anzeige.setSudoku(s);
                 lader.laden(s);
                 s.loesen();
             }
             case 2 -> {
-                Sudoku s = new StrategieSudoku(lader);
+                Sudoku s = new StrategieSudoku(lader, anzeige);
+                anzeige.setSudoku(s);
                 lader.laden(s);
                 s.loesen();
             }
             case 3 -> {
-                Sudoku s = new ProbierSudoku(lader);
+                Sudoku s = new ProbierSudoku(lader, anzeige);
+                anzeige.setSudoku(s);
                 lader.laden(s);
                 s.loesen();
             }
-            default -> {
-                System.out.println("Falsche Eingabe");
-            }
+            default -> System.out.println("Falsche Eingabe");
         }
         System.out.println();
     }
