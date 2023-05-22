@@ -9,24 +9,20 @@ import sudoku.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.ExceptionListener;
 import java.util.Scanner;
 
-
-public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListener {
+/**
+ * Die Klasse SudokuFrame ist eine grafische Oberfläche für das Sudoku.
+ * @author Thomas Wagner
+ */
+public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListener, ErrorListener {
     private final Button[][] buttons = new Button[9][9];
-    Label choiceLadenLabel;
-    Label choiceLoesenLabel;
-    Choice choiceLaden;
-    Choice choiceLoesen;
-    Button loesen;
-    Button laden;
-    Sudoku sudoku;
-    Label statusLabel;
-    Label status;
-    Label exceptionLabel;
-    Label exception;
-    TextField input;
+    private Choice choiceLaden;
+    private Choice choiceLoesen;
+    private Sudoku sudoku;
+    private final Label status;
+    private final TextField exception;
+    private final TextField input;
     public static void main(String[] args) {
         SudokuFrame frame = new SudokuFrame();
 
@@ -47,24 +43,24 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
         // Erstelle Menü
         createMenu();
         // Erstelle StatusLabel
-        statusLabel = new Label("Status: ");
-        statusLabel.setBounds(500, 450, 200, 25);
+        Label statusLabel = new Label("Status: ");
+        statusLabel.setBounds(500, 275, 200, 25);
         this.add(statusLabel);
         status = new Label("");
-        status.setBounds(500, 475, 200, 25);
+        status.setBounds(500, 300, 200, 25);
         this.add(status);
 
         // Erstelle ExceptionLabel
-        exceptionLabel = new Label("Exception: ");
-        exceptionLabel.setBounds(500, 400, 200, 25);
+        Label exceptionLabel = new Label("Exception: ");
+        exceptionLabel.setBounds(500, 325, 200, 25);
         this.add(exceptionLabel);
-        exception = new Label("");
-        exception.setBounds(500, 425, 200, 25);
+        exception = new TextField("");
+        exception.setEditable(false);
+        exception.setBounds(500, 350, 200, 25);
         this.add(exception);
-        ExceptionListener exceptionListener = e -> exception.setText(e.getMessage());
         // Erstelle Eingabefeld
         input = new TextField();
-        input.setBounds(500, 350, 200, 25);
+        input.setBounds(500, 250, 200, 25);
         this.add(input);
         init();
         this.setVisible(true);
@@ -74,12 +70,13 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
         SudokuLader lader = new BeispielLader();
         sudoku = new ProbierSudoku(lader, this);
         sudoku.addZustandListener(this);
+        sudoku.addErrorListener(this);
         anzeigen();
     }
 
     private void createMenu() {
         // Erstelle Menü
-        choiceLadenLabel = new Label("Lader:");
+        Label choiceLadenLabel = new Label("Lader:");
         choiceLadenLabel.setBounds(500, 40, 50, 25);
         this.add(choiceLadenLabel);
 
@@ -90,7 +87,7 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
         choiceLaden.add("Terminal");
         this.add(choiceLaden);
 
-        choiceLoesenLabel = new Label("Löser:");
+        Label choiceLoesenLabel = new Label("Löser:");
         choiceLoesenLabel.setBounds(500, 110, 50, 25);
         this.add(choiceLoesenLabel);
 
@@ -101,7 +98,7 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
         choiceLoesen.add("Strategie");
         this.add(choiceLoesen);
         // Erstelle Schaltfläche
-        laden = new Button();
+        Button laden = new Button();
         laden.setLabel("Laden");
         laden.setBounds(555, 180, 100, 20);
         laden.addActionListener(e -> {
@@ -127,12 +124,13 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
                 case "Strategie" -> sudoku = new StrategieSudoku(lader, this);
             }
             sudoku.addZustandListener(this);
+            sudoku.addErrorListener(this);
             sudoku.lader.laden(sudoku);
             anzeigen();
         });
         this.add(laden);
 
-        loesen = new Button();
+        Button loesen = new Button();
         loesen.setLabel("Lösen");
         loesen.setBounds(555, 210, 100, 20);
         loesen.addActionListener((ignored) -> {
@@ -144,21 +142,28 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
         this.add(loesen);
     }
 
+    /**
+     * Zeigt das Sudoku in der grafischen Oberfläche an.
+     */
     @Override
     public void anzeigen() {
         if (sudoku != null) {
             for (int i = 0; i < 9; i++) {
                 for (int j = 0; j<9; j++) {
                     if (sudoku.zeilen[i].getFeld(j).getWert() != 0) {
-                        buttons[i][j].setLabel(String.valueOf(sudoku.zeilen[i].getFeld(j).getWert()));
+                        buttons[j][i].setLabel(String.valueOf(sudoku.zeilen[i].getFeld(j).getWert()));
                     } else {
-                        buttons[i][j].setLabel("");
+                        buttons[j][i].setLabel("");
                     }
                 }
             }
         }
     }
 
+    /**
+     * Setzt das Sudoku, das in der grafischen Oberfläche angezeigt werden soll.
+     * @param sudoku Sudoku, das angezeigt werden soll.
+     */
     @Override
     public void setSudoku(Sudoku sudoku) {
     }
@@ -172,6 +177,10 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
                 // Position auf dem Elternelement (x, y, breite, hoehe)
                 b.setBounds(i*50 + 10, j * 50 + 40, 50, 50);
                 b.addActionListener(e -> {
+                    if(sudoku.istGeloest()) {
+                        sudoku.fireError(new Exception("Sudoku ist bereits gelöst"));
+                        return;
+                    }
                     if (sudoku == null) {
                         return;
                     }
@@ -183,13 +192,21 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
                     if (input.getText().equals("")) {
                         return;
                     }
+                    int zahl;
                     try {
-                        sudoku.zeilen[koordinaten[0]].getFeld(koordinaten[1]).setWert(Integer.parseInt(input.getText()));
+                        zahl = Integer.parseInt(input.getText());
                     } catch (NumberFormatException ignored) {
                         return;
                     }
+                    try {
+                        sudoku.zeilen[koordinaten[0]].getFeld(koordinaten[1]).setWert(zahl);
+                    } catch (Exception ex) {
+                        sudoku.fireError(ex);
+                    }
                     anzeigen();
-
+                    if (sudoku.istGeloest()) {
+                        sudoku.setZustand(SudokuZustand.Geloest);
+                    }
                 }
                 );
                 this.add(b);
@@ -202,15 +219,28 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
         for (int i = 0; i < 9; i++) {
             for(int j = 0; j < 9; j++) {
                 if (buttons[i][j] == e) {
-                    return new int[]{i, j};
+                    return new int[]{j, i};
                 }
             }
         }
         return null;
     }
 
+    /**
+     * Wird aufgerufen, wenn sich der Zustand des Sudokus ändert.
+     * @param zustand Neuer Zustand des Sudokus.
+     */
     @Override
     public void zustandChanged(SudokuZustand zustand) {
         status.setText(zustand.toString());
+    }
+
+    /**
+     * Wird aufgerufen, wenn ein Fehler auftritt.
+     * @param e Fehler, der aufgetreten ist.
+     */
+    @Override
+    public void exceptionOccurred(Exception e) {
+        exception.setText(e.getMessage());
     }
 }

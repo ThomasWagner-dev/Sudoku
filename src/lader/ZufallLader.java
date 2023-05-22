@@ -36,8 +36,20 @@ public class ZufallLader extends SudokuLader {
             int j = (int) (Math.random() * 9);
             if (s.zeilen[i].getFeld(j).getWert() == 0) {
                 int wert = (int) (Math.random() * 9) + 1;
-                while (!s.setWert(i, j, wert)) {
+                boolean erfolgreich = true;
+                try {
+                    s.setWert(i, j, wert);
+                } catch (Exception e) {
+                    erfolgreich = false;
+                }
+                while (!erfolgreich) {
                     wert = (int) (Math.random() * 9) + 1;
+                    erfolgreich = true;
+                    try {
+                        s.setWert(i, j, wert);
+                    } catch (Exception e) {
+                        erfolgreich = false;
+                    }
                 }
                 s.fixiere(i, j);
                 gesezteZahlen++;

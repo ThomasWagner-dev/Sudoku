@@ -17,6 +17,9 @@ class BeispielLaderTest {
         probierSudoku = new ProbierSudoku(lader, anzeige);
     }
 
+    /**
+     * Testet, ob das Beispiel-Sudoku korrekt geladen wird.
+     */
     @Test
     void laden() {
         System.out.println("Sudoku vor Laden des Beispiel-Sudokus:");

@@ -29,6 +29,10 @@ public class SudokuTerminalAnzeige implements ISudokuAnzeige {
         }
     }
 
+    /**
+     * Setzt das Sudoku.
+     * @param s das Sudoku.
+     */
     @Override
     public void setSudoku(Sudoku s) {
         this.sudoku = s;

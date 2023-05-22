@@ -47,17 +47,25 @@ public class ProbierSudoku extends Sudoku {
         if (schritte > 50000000) {
             return false;
         }
+        if (schritte % 1000000 == 0) {
+            System.out.println("Schritt: " + schritte);
+        }
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 Feld feld = zeilen[i].getFeld(j);
                 if (feld.getWert() == 0) { // data.Feld ist noch nicht gefüllt
                     for (int k = 1; k <= 9; k++) {
-                        boolean erfolgreich = feld.setWert(k);
+                        boolean erfolgreich = true;
+                        try {
+                            setWert(feld.zeile.getNr(), feld.spalte.getNr(), k);
+                        } catch (Exception e) {
+                            erfolgreich = false;
+                        }
                         if (erfolgreich && loesenRec()) { // Rekursiver Aufruf, um das nächste data.Feld zu füllen
                             return true; // Lösung gefunden
                         }
+                        feld.reset();
                     }
-                    feld.reset();
                     return false; // Keine Zahl passt in dieses data.Feld
                 }
             }

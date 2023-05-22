@@ -2,6 +2,7 @@ package sudoku;
 
 import anzeige.ISudokuAnzeige;
 import data.Feld;
+
 import lader.SudokuLader;
 
 import java.util.ArrayList;
@@ -68,11 +69,17 @@ public class ZufallSudoku extends Sudoku {
             do {
                 k = (int) (Math.random() * 9 + 1);
             } while (ausProbierteZahlen.contains(k));
-            erfolgreich = setWert(i, j, k);
+            erfolgreich = true;
+            try {
+                setWert(feld.zeile.getNr(), feld.spalte.getNr(), k);
+            } catch (Exception e) {
+                erfolgreich = false;
+            }
             ausProbierteZahlen.add(k);
             if (erfolgreich && loesenRec()) { // Rekursiver Aufruf, um das nächste data.Feld zu füllen
                 return true; // Lösung gefunden
             }
+            feld.reset();
         } while (ausProbierteZahlen.size() < 9);
         feld.reset();
         return false;

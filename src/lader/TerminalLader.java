@@ -42,19 +42,20 @@ public class TerminalLader extends SudokuLader {
             }
             for (int j = 0; j < 9; j++) {
                 if (!werte[j].equals("_")) {
+                    int zahl;
                     try {
-                        if (!s.setWert(i, j, Integer.parseInt(werte[j]))) { // schlägt fehl, wenn der Wert keine Zahl ist
-                            ungueltigeEingaben++;
-                        } else {
-                            s.fixiere(i, j);
-                        }
+                        zahl = Integer.parseInt(werte[j]);
                     } catch (NumberFormatException e) {
                         s.reset();
                         System.out.println("Ungültige Eingabe.");
                         return; // Beende die Methode
                     }
-                } else {
-                    s.setWert(i, j, 0);
+                    try {
+                        s.setWert(i, j, zahl);
+                        s.fixiere(i, j);
+                    } catch (Exception e) {
+                        ungueltigeEingaben++;
+                    }
                 }
             }
         }

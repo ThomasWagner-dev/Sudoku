@@ -62,16 +62,26 @@ public class StrategieSudoku extends Sudoku {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 Feld feld = zeilen[i].getFeld(j);
-                if (feld.getWert() == 0) { // data.Feld ist noch nicht gefüllt
+                if (feld.getWert() == 0 && !feld.istFixiert()) { // data.Feld ist noch nicht gefüllt
                     for (int k = 1; k <= 9; k++) {
-                        boolean erfolgreich = feld.setWert(k);
+                        boolean erfolgreich = true;
+                        try {
+                            setWert(feld.zeile.getNr(), feld.spalte.getNr(), k);
+                        } catch (Exception e) {
+                            erfolgreich = false;
+                        }
                         if (erfolgreich) {
                             feld.moeglicheWerte.clear();
                             gesetzte.addAll(entferneMoeglicheWerteMitSetzen(feld));
                         }
-                        if (erfolgreich && loesenRec()) { // Rekursiver Aufruf, um das nächste data.Feld zu füllen
-                            return true; // Lösung gefunden
+                        try {
+                            if (erfolgreich && loesenRec()) { // Rekursiver Aufruf, um das nächste data.Feld zu füllen
+                                return true; // Lösung gefunden
+                            }
+                        } catch (StackOverflowError e) {
+                            return false;
                         }
+                        feld.resetStrat();
                     }
                     gesetzte.forEach(Feld::resetStrat);
                     feld.resetStrat();
@@ -127,10 +137,13 @@ public class StrategieSudoku extends Sudoku {
     }
 
     private void entferneFelder(Feld ausgangsfeld, ArrayList<Feld> gesetzteFelder, Feld feld) {
-        if (feld != ausgangsfeld) {
+        if (feld != ausgangsfeld && feld.getWert() == 0) {
             feld.moeglicheWerte.remove((Integer) ausgangsfeld.getWert());
             if (feld.moeglicheWerte.size() == 1) {
-                feld.setWert(feld.moeglicheWerte.get(0));
+                try {
+                    setWert(feld.zeile.getNr(), feld.spalte.getNr(), feld.moeglicheWerte.get(0));
+                } catch (Exception ignored) {
+                }
                 feld.moeglicheWerte.clear();
                 gesetzteFelder.add(feld);
                 entferneMoeglicheWerte(feld);

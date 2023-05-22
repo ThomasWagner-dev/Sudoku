@@ -1,5 +1,7 @@
 package data;
 
+import exception.*;
+
 import java.util.ArrayList;
 
 /**
@@ -78,20 +80,27 @@ public class Feld {
 
     /**
      * Setzt den Wert des Feldes.
-     *
-     * @return true, wenn der Wert gesetzt werden konnte, sonst false.
+     * Wirft eine Exception, wenn der Wert nicht gültig ist, oder bereits in der Zeile, Spalte oder im Quadranten vorhanden ist.
      */
-    public boolean setWert(int wert) {
+    public void setWert(int wert) throws WerteBereichUngueltigException, WertInZeileVorhandenException, WertInSpalteVorhandenException, WertInQuadrantVorhandenException, FeldBelegtException {
+        if (this.wert != 0) {
+            throw new FeldBelegtException("Das Feld ist bereits belegt.");
+        }
         // Prüfe, ob der Wert gültig ist.
         if (wert < 1 || wert > 9) {
-            return false;
+            throw new WerteBereichUngueltigException("Der Wert " + wert + " ist nicht im Bereich 1-9.");
         }
         //Prüfe, ob der Wert eindeutig ist.
-        if (zeile.istVorhanden(wert) || spalte.istVorhanden(wert) || quadrant.istVorhanden(wert)) {
-            return false;
+        if (zeile.istVorhanden(wert)) {
+            throw new WertInZeileVorhandenException("Der Wert " + wert + " ist bereits in der Zeile vorhanden.");
+        }
+        if (spalte.istVorhanden(wert)) {
+            throw new WertInSpalteVorhandenException("Der Wert " + wert + " ist bereits in der Spalte vorhanden.");
+        }
+        if (quadrant.istVorhanden(wert)) {
+            throw new WertInQuadrantVorhandenException("Der Wert " + wert + " ist bereits im Quadranten vorhanden.");
         }
         this.wert = wert;
-        return true;
     }
 
     /**
