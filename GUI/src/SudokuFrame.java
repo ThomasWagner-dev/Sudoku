@@ -172,9 +172,10 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
                 // Position auf dem Elternelement (x, y, breite, hoehe)
                 b.setBounds(i*50 + 10, j * 50 + 40, 50, 50);
                 b.addActionListener(e -> {
-                    if (sudoku != null) {
+                    if (sudoku == null) {
                         return;
                     }
+
                     int[] koordinaten = getButtonKoordinaten((Button) e.getSource());
                     if (koordinaten == null) {
                         return;
