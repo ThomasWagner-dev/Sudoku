@@ -1,11 +1,10 @@
 import anzeige.ISudokuAnzeige;
 import data.SudokuZustand;
-import lader.BeispielLader;
-import lader.SudokuLader;
-import lader.TerminalLader;
-import lader.ZufallLader;
+import lader.*;
 import sudoku.*;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -44,23 +43,23 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
         createMenu();
         // Erstelle StatusLabel
         Label statusLabel = new Label("Status: ");
-        statusLabel.setBounds(500, 275, 200, 25);
+        statusLabel.setBounds(500, 295, 200, 25);
         this.add(statusLabel);
         status = new Label("");
-        status.setBounds(500, 300, 200, 25);
+        status.setBounds(500, 320, 200, 25);
         this.add(status);
 
         // Erstelle ExceptionLabel
         Label exceptionLabel = new Label("Exception: ");
-        exceptionLabel.setBounds(500, 325, 200, 25);
+        exceptionLabel.setBounds(500, 345, 200, 25);
         this.add(exceptionLabel);
         exception = new TextField("");
         exception.setEditable(false);
-        exception.setBounds(500, 350, 200, 25);
+        exception.setBounds(500, 370, 200, 25);
         this.add(exception);
         // Erstelle Eingabefeld
         input = new TextField();
-        input.setBounds(500, 250, 200, 25);
+        input.setBounds(500, 270, 200, 25);
         this.add(input);
         init();
         this.setVisible(true);
@@ -85,6 +84,7 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
         choiceLaden.add("Beispiel");
         choiceLaden.add("Zufall");
         choiceLaden.add("Terminal");
+        choiceLaden.add("XML");
         this.add(choiceLaden);
 
         Label choiceLoesenLabel = new Label("Löser:");
@@ -116,6 +116,18 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
                     return;
                 }}
                 case "Terminal" -> lader = new TerminalLader();
+                case "XML" -> {
+                    JFileChooser chooser = new JFileChooser();
+                    chooser.setCurrentDirectory(new java.io.File("./data"));
+                    chooser.setDialogTitle("Wähle XML-Datei");
+                    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    chooser.setAcceptAllFileFilterUsed(false);
+                    if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                        lader = new XmlLader(chooser.getSelectedFile().getAbsolutePath());
+                    } else {
+                        return;
+                    }
+                }
                 default -> lader = null;
             }
             switch (choiceLoesen.getSelectedItem()) {
@@ -138,8 +150,26 @@ public class SudokuFrame extends Frame implements ISudokuAnzeige, ZustandListene
                 sudoku.loesen();
             }
         });
-        anzeigen();
         this.add(loesen);
+
+        Button speichern = new Button();
+        speichern.setLabel("Speichern");
+        speichern.setBounds(555, 240, 100, 20);
+        speichern.addActionListener((ignored) -> {
+            if (sudoku != null) {
+                JFileChooser chooser = new JFileChooser();
+                chooser.setCurrentDirectory(new java.io.File("./data"));
+                chooser.setDialogTitle("Wähle Speicherort");
+                chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                chooser.setAcceptAllFileFilterUsed(false);
+                if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                    XmlSaver saver = new XmlSaver();
+                    saver.speichern(sudoku, chooser.getSelectedFile().getAbsolutePath());
+                }
+            }
+        });
+        this.add(speichern);
+        anzeigen();
     }
 
     /**

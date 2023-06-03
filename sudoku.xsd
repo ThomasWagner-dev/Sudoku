@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="https://namespace.fh-muenster.de/studium"
+           targetNamespace="https://namespace.fh-muenster.de/studium">
+    <xs:element name="sudoku" type="sudokuType"/>
+
+    <xs:complexType name="sudokuType">
+        <xs:sequence>
+            <xs:element name="feld" type="feldType" minOccurs="81" maxOccurs="81"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="feldType">
+      <xs:sequence>
+      <xs:element type="wert" name="wert"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="wert">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="9"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

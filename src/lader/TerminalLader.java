@@ -53,7 +53,7 @@ public class TerminalLader extends SudokuLader {
                     try {
                         s.setWert(i, j, zahl);
                         s.fixiere(i, j);
-                    } catch (Exception e) {
+                    } catch (Exception ignored) {
                         ungueltigeEingaben++;
                     }
                 }

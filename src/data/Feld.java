@@ -29,10 +29,13 @@ public class Feld {
      */
     public ArrayList<Integer> moeglicheWerte;
     private int wert;
-    /**
-     * Gibt an, ob das Feld fixiert ist, und somit nicht verändert werden darf.
-     */
     private boolean fixiert;
+    private FeldBelegtException feldBelegtException = new FeldBelegtException("Das Feld ist bereits belegt.");
+    private WertInZeileVorhandenException wertInZeileVorhandenException = new WertInZeileVorhandenException("Der Wert ist bereits in der Zeile vorhanden.");
+    private WertInSpalteVorhandenException wertInSpalteVorhandenException = new WertInSpalteVorhandenException("Der Wert ist bereits in der Spalte vorhanden.");
+    private WertInQuadrantVorhandenException wertInQuadrantVorhandenException = new WertInQuadrantVorhandenException("Der Wert ist bereits in dem Quadrant vorhanden.");
+    private WerteBereichUngueltigException werteBereichUngueltigException = new WerteBereichUngueltigException("Der Wert ist nicht im Bereich von 1 bis 9.");
+
 
     /**
      * Erstellt ein neues Feld.
@@ -81,24 +84,25 @@ public class Feld {
     /**
      * Setzt den Wert des Feldes.
      * Wirft eine Exception, wenn der Wert nicht gültig ist, oder bereits in der Zeile, Spalte oder im Quadranten vorhanden ist.
+     *
      */
     public void setWert(int wert) throws WerteBereichUngueltigException, WertInZeileVorhandenException, WertInSpalteVorhandenException, WertInQuadrantVorhandenException, FeldBelegtException {
         if (this.wert != 0) {
-            throw new FeldBelegtException("Das Feld ist bereits belegt.");
+            throw feldBelegtException;
         }
         // Prüfe, ob der Wert gültig ist.
         if (wert < 1 || wert > 9) {
-            throw new WerteBereichUngueltigException("Der Wert " + wert + " ist nicht im Bereich 1-9.");
+            throw werteBereichUngueltigException;
         }
         //Prüfe, ob der Wert eindeutig ist.
         if (zeile.istVorhanden(wert)) {
-            throw new WertInZeileVorhandenException("Der Wert " + wert + " ist bereits in der Zeile vorhanden.");
+            throw wertInZeileVorhandenException;
         }
         if (spalte.istVorhanden(wert)) {
-            throw new WertInSpalteVorhandenException("Der Wert " + wert + " ist bereits in der Spalte vorhanden.");
+            throw wertInSpalteVorhandenException;
         }
         if (quadrant.istVorhanden(wert)) {
-            throw new WertInQuadrantVorhandenException("Der Wert " + wert + " ist bereits im Quadranten vorhanden.");
+            throw wertInQuadrantVorhandenException;
         }
         this.wert = wert;
     }
