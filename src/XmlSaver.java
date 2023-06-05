@@ -10,16 +10,19 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
+
+/**
+ * Klasse zum Speichern eines Sudokus in eine XML-Datei.
+ */
 public class XmlSaver {
     DocumentBuilder builder;
 
+    /**
+     * Konstruktor der Klasse XmlSaver.
+     */
     public XmlSaver() {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -30,6 +33,11 @@ public class XmlSaver {
 
     }
 
+    /**
+     * Beschreibt das Speichern eines Sudokus in eine XML-Datei.
+     * @param s das Sudoku-Objekt, das gespeichert werden soll.
+     * @param dateiname der Name der Datei, in die das Sudoku gespeichert werden soll.
+     */
     public void speichern(Sudoku s, String dateiname) {
         Document doc = builder.newDocument();
         Element root = doc.createElement("sudoku");

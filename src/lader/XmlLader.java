@@ -1,15 +1,10 @@
 package lader;
 
-import exception.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import sudoku.Sudoku;
-
-import org.w3c.dom.Document.*;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,14 +14,19 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Klasse zum Laden eines Sudokus aus einer XML-Datei.
+ */
 public class XmlLader extends SudokuLader{
     private String dateiname;
     private DocumentBuilder builder;
 
+    /**
+     * Konstruktor der Klasse XmlLader.
+     * @param dateiname der Name der Datei, aus der das Sudoku geladen werden soll.
+     */
     public XmlLader(String dateiname) {
         this.dateiname = dateiname;
         try {
@@ -48,7 +48,7 @@ public class XmlLader extends SudokuLader{
         if (s == null) {
             return;
         }
-        Document doc = null;
+        Document doc;
         if (!validateXMLSchema()) {
             return;
         }

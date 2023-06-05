@@ -84,6 +84,11 @@ public class Feld {
     /**
      * Setzt den Wert des Feldes.
      * Wirft eine Exception, wenn der Wert nicht gültig ist, oder bereits in der Zeile, Spalte oder im Quadranten vorhanden ist.
+     * @throws WerteBereichUngueltigException Wenn der Wert nicht im Bereich von 1 bis 9 liegt.
+     * @throws WertInZeileVorhandenException Wenn der Wert bereits in der Zeile vorhanden ist.
+     * @throws WertInSpalteVorhandenException Wenn der Wert bereits in der Spalte vorhanden ist.
+     * @throws WertInQuadrantVorhandenException Wenn der Wert bereits in dem Quadranten vorhanden ist.
+     * @throws FeldBelegtException Wenn das Feld bereits belegt ist.
      *
      */
     public void setWert(int wert) throws WerteBereichUngueltigException, WertInZeileVorhandenException, WertInSpalteVorhandenException, WertInQuadrantVorhandenException, FeldBelegtException {

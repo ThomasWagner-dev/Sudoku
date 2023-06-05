@@ -105,6 +105,13 @@ public abstract class Sudoku{
      * @param zeile  die Zeile des Feldes.
      * @param spalte die Spalte des Feldes.
      * @param wert   der neue Wert des Feldes
+     * @throws UngueltigeKoordinatenException  wenn die Koordinaten ungültig sind.
+     * @throws WerteBereichUngueltigException  wenn der Wert nicht im Bereich 1-9 liegt.
+     * @throws WertInZeileVorhandenException   wenn der Wert bereits in der Zeile vorhanden ist.
+     * @throws WertInSpalteVorhandenException  wenn der Wert bereits in der Spalte vorhanden ist.
+     * @throws WertInQuadrantVorhandenException wenn der Wert bereits im Quadranten vorhanden ist.
+     * @throws FeldBelegtException             wenn das Feld bereits einen Wert hat.
+     * @see Feld#setWert(int)
      */
     public void setWert(int zeile, int spalte, int wert) throws
             UngueltigeKoordinatenException,
