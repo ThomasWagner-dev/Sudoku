@@ -76,6 +76,7 @@ public class XmlLader extends SudokuLader{
                             continue;
                         }
                         s.setWert(i, j, w);
+                        s.fixiere(i, j);
                     } catch (Exception ex) {
                         System.out.println("Das Sudoku ist nicht gültig: " + ex.getMessage());
                     }
